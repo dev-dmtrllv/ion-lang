@@ -12,7 +12,7 @@ namespace ion::utils
 		return argv_[0];
 	}
 
-	[[nodiscard]] Maybe<std::string> ArgParser::at(std::size_t index) const
+	[[nodiscard]] std::optional<std::string> ArgParser::at(std::size_t index) const
 	{
 		index++;
 		if(index < argc_)
@@ -28,7 +28,7 @@ namespace ion::utils
 		return false;
 	}
 
-	[[nodiscard]] Maybe<std::string> ArgParser::getFlag(std::string_view arg) const
+	[[nodiscard]] std::optional<std::string> ArgParser::getFlag(std::string_view arg) const
 	{
 		for (int i = 0; i != argc_; i++)
 			if (arg.compare(argv_[i]) == 0)

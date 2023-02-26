@@ -29,5 +29,6 @@
 #include <coroutine>
 #include <numeric>
 #include <string_view>
+#include <variant>
 
 using Path = std::filesystem::path;

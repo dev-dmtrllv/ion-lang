@@ -1,0 +1,6 @@
+#[test_attr]
+export const fn test(a: i32, b: i32): i32
+{
+	const c = a + b;
+	return c / a * b;
+}
