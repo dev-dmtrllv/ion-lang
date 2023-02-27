@@ -3,111 +3,96 @@
 
 namespace ion::compiler
 {
-	Lexer::Lexer()
+	Lexer::Lexer(const Path& path): path(path) { }
+
+	Lexer::~Lexer() { }
+
+	bool Lexer::checkIdentifier(const char value, std::vector<Token>& tokens)
 	{
+		const auto maybeIdent = Token::Identifier::fromValue({ value, false });
+		Token::Identifier ident = Token::tokens.IDENT_NONE;
+		const bool ok = maybeIdent.unwrap(ident);
 
-	}
+		const auto name = std::string({ value });
 
-	Lexer::~Lexer()
+		if (ok)
+		{
+			if (!ident.ignore())
+				tokens.emplace_back(line_, col_, ident, name);
+		}
+		else
+		{
+			tokens.emplace_back(line_, col_, Token::Name::create(name), name);
+		}
+
+		if (value == '\n')
+		{
+			col_ = 1;
+			line_++;
+		}
+		else if (value == '\t')
+		{
+			col_ += 4;
+		}
+		else
+		{
+			col_++;
+		}
+
+		return ok;
+	};
+
+	bool Lexer::checkBuffer(std::string& buffer, std::vector<Token>& tokens)
 	{
+		const auto maybeKeyword = Token::Keyword::fromValue(buffer);
+		Token::Keyword keyword = Token::tokens.KEYWORD_NONE;
+		const bool ok = maybeKeyword.unwrap(keyword);
 
-	}
+		if (ok)
+		{
+			tokens.emplace_back(line_, col_, keyword, buffer);
+		}
+		else
+		{
+			tokens.emplace_back(line_, col_, Token::Name::create(buffer), buffer);
+		}
 
-	void Lexer::getTokenStream([[maybe_unused]] const Path& path, [[maybe_unused]] std::vector<Token>& tokens)
+		col_ += buffer.size();
+		buffer = "";
+		return true;
+	};
+
+	void Lexer::parse([[maybe_unused]] std::vector<Token>& tokens)
 	{
-		utils::println(path);
+		utils::println("Lexer: parsing", path);
 
 		std::ifstream file(path);
 		std::istreambuf_iterator<char> it(file);
 		std::istreambuf_iterator<char> end;
 
-		std::size_t startTokenLine = 1;
-		std::size_t startTokenColumn = 1;
-
-		std::size_t line = 1;
-		std::size_t col = 1;
-
 		std::string buffer;
 
-		const auto push = [&]<typename T>(const T type, const std::string & text)
-		{
-			tokens.emplace_back(startTokenLine, startTokenColumn, type, text);
-		};
-
-		const auto checkAndPushChar = [ & ](const char value) -> bool
-		{
-			const auto maybeIdent = Token::Identifier::fromValue({ value, false });
-			Token::Identifier ident = Token::IDENT_NONE;
-			const bool ok = maybeIdent.unwrap(ident);
-
-			const auto name = std::string({ value });
-
-			if (ok)
-			{
-				if (!ident.ignore())
-					tokens.emplace_back(col, line, ident, name);
-			}
-			else
-			{
-				tokens.emplace_back(col, line, Token::Name::create(name), name);
-			}
-
-			if (value == '\n')
-			{
-				col = 1;
-				line++;
-			}
-			else if (value == '\t')
-			{
-				col += 4;
-			}
-			else
-			{
-				col++;
-			}
-
-			return ok;
-		};
-
-		const auto checkAndPushString = [ & ](std::string& buffer) -> bool
-		{
-			const auto maybeKeyword = Token::Keyword::fromValue(buffer);
-			Token::Keyword keyword = Token::KEYWORD_NONE;
-			const bool ok = maybeKeyword.unwrap(keyword);
-
-			if (ok)
-			{
-				tokens.emplace_back(col, line, keyword, buffer);
-			}
-			else
-			{
-				tokens.emplace_back(col, line, Token::Name::create(buffer), buffer);
-			}
-
-			col += buffer.size();
-			buffer = "";
-			return true;
-		};
+		reset();
 
 		while (!it.equal(end))
 		{
 			const char value = *it;
 			const auto maybeIdent = Token::Identifier::fromValue({ value, false });
-			Token::Identifier ident = Token::IDENT_NONE;
+			Token::Identifier ident = Token::tokens.IDENT_NONE;
 			if (maybeIdent.unwrap(ident)) // we need to split 
 			{
 				const std::size_t bs = buffer.size();
 				if (bs == 1)
 				{
-					checkAndPushChar(buffer.at(0));
+					checkIdentifier(buffer.at(0), tokens);
 					buffer = "";
 				}
 				else if (bs > 1)
 				{
-					checkAndPushString(buffer);
+					checkBuffer(buffer, tokens);
 				}
 
-				checkAndPushChar(value);
+				checkIdentifier(value, tokens);
 			}
 			else
 			{
@@ -116,11 +101,5 @@ namespace ion::compiler
 
 			it++;
 		}
-
-		for (const auto& t : tokens)
-			utils::println(t);
-
-
-		utils::println("");
 	}
 }

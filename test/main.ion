@@ -1,6 +1,96 @@
-#[test_attr]
-export const fn test(a: i32, b: i32): i32
+import sub.export_tests{test,test2 as subTest2}; 
+
+type Stringable =
 {
-	const c = a + b;
-	return c / a * b;
+	fn toString(): String
+};
+
+// Generic struct
+struct A<T: Stringable> : Moveable, Stringable
+{
+	property: T;
+
+	fn A(this.property: T); // constructor
+
+	fn toString(): String 
+	{
+		return property.toString();
+	}
+}
+
+struct T : Stringable
+{
+	integers: i32; 			// u8, u16, u32, u64, i8, i16, i32, i64
+	floatingPoints: f32; 	// f32, f64
+	booleans: bool;
+	u8Array: u8[4];
+	utf_8: Str<10> = "wop"; // utf-8 string
+	utf_16: Str<20, u16> = "test"; // utf-16 string
+	smallString: SmallStr = "this is a waaaaaay to big string...."; // Error: too many elements
+	smallString2: SmallStr<17> = "this is small"; // Error: 17 is not within range 1...16
+
+	fn T(test: bool):
+		integers(test as i32),
+		floatingPoints(test ? 0.1 : 1.0),
+		booleans(test)
+		u8Array(test ? [1, 2, 3, 4] : [4, 3, 2, 1]),
+		if (test) utf_8("test set") , // uses default value if value is not true
+		if (!test) utf_16("test not set"),
+	{}
+
+	fn formatProp<T>(name: String, val: T): string
+	{
+		return format("{}:{} [{} bytes]", name, val, String(sizeof(T)) + (sizeof(T) == 1 ? " byte" : " bytes"));
+	}
+
+	fn toString(): String
+	{
+		const props = [
+			formatProp("integers", integers), // prints 0 or 1 [2 bytes] 
+			formatProp("floatingPoints", floatingPoints), // prints 0.1 or 1.0 [2 bytes]
+			formatProp("booleans", booleans), // prints true or false [1 byte]
+			formatProp("u8Array", u8Array) // prints "[1, 2, 3, 4]" or "[4, 3, 2, 1]" [2 bytes]
+		];
+
+		return format("T: { {}, {}, {}, {}\n}", props, "\n\t");
+		/*
+		prints possibly:
+			T: {
+				integers: 1 [2 bytes],
+				floatingPoints: 0.1 [2 bytes],
+				booleans: true [1 byte],
+				u8Array: [1, 2, 3, 4] [4 bytes]
+			}
+		*/
+	}
+}
+
+// this method consumes a, which means a is not valid after this functions used it
+fn testA<T: Debug>(a: Moved<A<T>>)
+{
+	
+}
+
+// this method should accept a copy instead of referencing the arg
+fn testACopy<T>(a: mut Copied<A<T>>)
+{
+	
+}
+
+// this method should reference the variable mutable
+fn testACopy<T>(a: mut A<T>, prop: T)
+{
+	a.property = prop;
+}
+
+fn main(): i32
+{
+	let a = A<u16>();
+	testA(a.move()); // a is not valid after this function call anymore!
+	//The function testA() owns it and possibly destroys it on scope exit. 
+	// testA(a); This will also work, since the struct A<T> uses the Moveable trait and Move
+
+	let x = test();
+	let y = test2();
+	return test1(x, y);
 }

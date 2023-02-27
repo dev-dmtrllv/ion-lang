@@ -1,0 +1,7 @@
+#[external]
+fn puts(string: Ptr<u8>): void;
+
+export fn test(): void
+{
+
+}

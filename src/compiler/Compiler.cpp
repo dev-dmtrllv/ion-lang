@@ -15,7 +15,7 @@ namespace ion::compiler
 	{
 		const auto paths = ion::fs::getFiles(projectPath);
 		files_.reserve(paths.size());
-		utils::container::vector::forEach(paths, [&](const auto& path) { files_.emplace_back(path); });
+		utils::container::vector::forEach(paths, [ & ](const auto& path) { files_.emplace_back(path); });
 	}
 
 	Compiler::~Compiler() { }
@@ -27,13 +27,22 @@ namespace ion::compiler
 
 	void Compiler::run()
 	{
-		if(!isConfigured_)
+		if (!isConfigured_)
 			throw utils::Error("Compiler is not configured!");
 
-		Lexer lexer{};
 
 		for (auto& file : files_)
-			lexer.getTokenStream(file.path, file.tokens);
+		{
+			Lexer lexer(file.path);
+			lexer.parse(file.tokens);
+
+			utils::println("line:\t\tcol:\t\ttype:\t\t\t\t\t\t\ttext:");
+
+			for (const auto& t : file.tokens)
+				utils::println(t);
+
+			utils::println("");
+		}
 
 		for (auto& file : files_)
 			file.buildSymbolTable();

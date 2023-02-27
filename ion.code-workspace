@@ -1,0 +1,39 @@
+{
+	"folders": [
+		{
+			"name": "compiler",
+			"path": "."
+		},
+		{
+			"name": "ion-test",
+			"path": "./test"
+		},
+		{
+			"name": "vscode extension",
+			"path": "./vscode-ext"
+		},
+		{
+			"name": "config",
+			"path": "./.vscode",
+			
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			"**/vscode-ext": true,
+			"**/test": true,
+			"**/ion.code-workspace": true,
+			"**/CmakePresets.json": true,
+			"**/CMakeLists.txt": true,
+			"**/.gitignore": true,
+			"**/out": true,
+			"**/.vscode": true
+		}
+	}
+}

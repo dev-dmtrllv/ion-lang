@@ -203,55 +203,65 @@ namespace ion::compiler
 			virtual bool match(const std::string& str) const override { return str.compare(value) == 0; }
 		};
 
-		static Keyword KEYWORD_NONE;
-		static Keyword EXPORT;
-		static Keyword IMPORT;
-		static Keyword RETURN;
-		static Keyword LET;
-		static Keyword PUB;
-		static Keyword FN;
-		static Keyword STRUCT;
-		static Keyword TRAIT;
-		static Keyword TYPE;
-		static Keyword USING;
-		static Keyword INTERFACE;
-		static Keyword IF;
-		static Keyword ELSEIF;
-		static Keyword ELSE;
-		static Keyword FOR;
-		static Keyword WHILE;
-		static Keyword MATCH;
-		static Keyword CONST;
-		static Keyword MUT;
-		static Keyword THIS;
+		struct Tokens
+		{
+			const Keyword KEYWORD_NONE = Keyword::create("\0");
+			const Keyword EXPORT = Keyword::create("export");
+			const Keyword IMPORT = Keyword::create("import");
+			const Keyword RETURN = Keyword::create("return");
+			const Keyword LET = Keyword::create("let");
+			const Keyword PUB = Keyword::create("pub");
+			const Keyword FN = Keyword::create("fn");
+			const Keyword STRUCT = Keyword::create("struct");
+			const Keyword TRAIT = Keyword::create("trait");
+			const Keyword TYPE = Keyword::create("type");
+			const Keyword USING = Keyword::create("using");
+			const Keyword INTERFACE = Keyword::create("interface");
+			const Keyword IF = Keyword::create("if");
+			const Keyword ELSEIF = Keyword::create("else if");
+			const Keyword ELSE = Keyword::create("else");
+			const Keyword FOR = Keyword::create("for");
+			const Keyword WHILE = Keyword::create("while");
+			const Keyword MATCH = Keyword::create("match");
+			const Keyword CONST = Keyword::create("const");
+			const Keyword MUT = Keyword::create("mut");
+			const Keyword THIS = Keyword::create("this");
 
-		static Identifier IDENT_NONE;
-		static Identifier NEW_LINE;
-		static Identifier CARIAGE_RETURN;
-		static Identifier TAB;
-		static Identifier SPACE;
+			const Identifier IDENT_NONE = Identifier::create('\0', true);
+			const Identifier NEW_LINE = Identifier::create('\n', true);
+			const Identifier CARIAGE_RETURN = Identifier::create('\r', true);
+			const Identifier TAB = Identifier::create('\t', true);
+			const Identifier SPACE = Identifier::create(' ', true);
 
-		static Identifier END_STMT;
-		static Identifier SCOPE_START;
-		static Identifier SCOPE_END;
-		static Identifier BRACKET_START;
-		static Identifier BRACKET_END;
-		static Identifier GENERIC_START;
-		static Identifier GENERIC_END;
-		static Identifier SQ_BRACKET_START;
-		static Identifier SQ_BRACKET_END;
-		static Identifier SEP;
-		static Identifier ADD;
-		static Identifier SUBTRACT;
-		static Identifier DIVIDE;
-		static Identifier MULTPLY;
-		static Identifier ATTRIBUTE;
-		static Identifier COLON;
-		static Identifier DOT;
-		static Identifier REF;
-		static Identifier TILDE;
-		static Identifier PIPE;
-		static Identifier NOT;
+			const Identifier END_STMT = Identifier::create(';');
+			const Identifier SCOPE_START = Identifier::create('{');
+			const Identifier SCOPE_END = Identifier::create('}');
+			const Identifier BRACKET_START = Identifier::create('(');
+			const Identifier BRACKET_END = Identifier::create(')');
+			const Identifier GENERIC_START = Identifier::create('<');
+			const Identifier GENERIC_END = Identifier::create('>');
+			const Identifier SQ_BRACKET_START = Identifier::create('[');
+			const Identifier SQ_BRACKET_END = Identifier::create(']');
+			const Identifier SEP = Identifier::create(',');
+			const Identifier ADD = Identifier::create('+');
+			const Identifier SUBTRACT = Identifier::create('-');
+			const Identifier DIVIDE = Identifier::create('/');
+			const Identifier MULTPLY = Identifier::create('*');
+			const Identifier ATTRIBUTE = Identifier::create('#');
+			const Identifier COLON = Identifier::create(':');
+			const Identifier DOT = Identifier::create('.');
+			const Identifier REF = Identifier::create('&');
+			const Identifier TILDE = Identifier::create('~');
+			const Identifier PIPE = Identifier::create('|');
+			const Identifier NOT = Identifier::create('!');
+
+		private:
+			explicit Tokens() { }
+
+			friend struct ion::compiler::Token;
+		};
+
+		static Tokens tokens;
 
 	public:
 		template<typename T>
@@ -271,7 +281,22 @@ namespace ion::compiler
 		std::string text;
 
 		template<typename T>
-		inline T type() { return std::get<T>(type_); }
+		inline T type() const { return std::get<T>(type_); }
+
+		inline std::string name() const
+		{
+			if(typeID == Identifier::ID)
+				return std::string({ type<Identifier>().value.first });
+			else if(typeID == Keyword::ID)
+				return type<Keyword>().value;
+			else if(typeID == Name::ID)
+				return type<Name>().value;
+			else if(typeID == Unknown::ID)
+				return type<Unknown>().value;
+			
+			
+			return "";	
+		}
 
 	private:
 		std::variant<Identifier, Keyword, Name, Unknown> type_;

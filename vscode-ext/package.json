@@ -1,0 +1,34 @@
+{
+	"name": "ion-lang",
+	"displayName": "ion lang",
+	"description": "syntax highlighting for the ion language",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.75.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "ion",
+				"aliases": [
+					"Ion",
+					"ion"
+				],
+				"extensions": [
+					".ion"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "ion",
+				"scopeName": "source.ion",
+				"path": "./syntaxes/ion.tmLanguage.json"
+			}
+		]
+	}
+}

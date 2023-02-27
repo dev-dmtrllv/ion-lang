@@ -1,0 +1,78 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Ion",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#literals"
+		},
+		{
+			"include": "#meta"
+		}
+	],
+	"repository": {
+		"literals": {
+			"patterns": [
+				{
+					"name": "constant.numeric",
+					"match": "\\b(?:0|[1-9](?:_*[0-9])*)[lL]?\\b"
+				}
+			]
+		},
+		"meta": {
+			"patterns": [
+				{
+					"name": "entity.name.type",
+					"match": "((?<=\\b(struct|trait|type)\\s)(\\w+)|\\b(u8|u16|u32|u64|i8|i16|i32|i64|f32|f64|bool)\\b)|((?<=\\w<)(\\w+)(?=>))|(\\w+(?=\\<))|((?<=: )|(?<=:))(\\w+)"
+				},
+				{
+					"name": "entity.name.function",
+					"match": "((?<=\\bfn\\s)(\\w+))|(\\w+(?=\\(.))"
+				},
+				{
+					"name": "variable",
+					"match": "(?<=\\b(let)\\s)(\\w+)|(\\w+(?=\\.))|(?<=\\.)[a-zA-Z]+\\.?(?=\\ |$)|(\\w+(?=:))"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.other",
+					"match": "\\b(struct|trait|abstract|mod|interface|type|fn|import|export|const|let|match|auto|mut)\\b"
+				},
+				{
+					"name": "keyword.control.ion",
+					"match": "\\b(if|while|for|return)\\b"
+				},
+				{
+					"name": "comment",
+					"begin": "//",
+					"end": "\n"
+				},
+				{
+					"name": "comment",
+					"begin": "/\\*",
+					"end": "\\*/"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.ion",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.ion",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.ion"
+}

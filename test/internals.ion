@@ -1,0 +1,35 @@
+mod Types
+{
+	type Unsigned = u8 | u16 | u32 | u64;
+	type Signed = i8 | i16 | i32 | i64;
+	type Integers = Unsigned | Signed;
+	type Range<From: Literal<Integers>, To: Literal<Integers>> = From...To; // range syntax
+}
+
+type Str<Size: Literal<u64>, CharSet: u8 | u16 = u8> = CharSet[Size];
+
+#[internal]
+type Literal<T> = T;
+
+#[internal]
+type Moved<T> = T;
+
+#[internal]
+type Copied<T> = T;
+
+#[internal]
+type Ref<T> = &T;
+
+#[internal]
+trait Moveable
+{
+	#[internal]
+	fn move(): Moved<Self>;
+}
+
+#[internal]
+trait Cloneable
+{
+	#[internal]
+	fn clone(): Self;
+}
