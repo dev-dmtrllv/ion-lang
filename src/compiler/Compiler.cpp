@@ -36,7 +36,7 @@ namespace ion::compiler
 			Lexer lexer(file.path);
 			lexer.parse(file.tokens);
 
-			utils::println("line:\t\tcol:\t\ttype:\t\t\t\t\t\t\ttext:");
+			utils::println(std::format("{: <{}}\t\t{: <{}}\t\t{: <{}}\t\t{: <{}}", "line:", 4, "column:", 4, "type:", 34, "text:", 20));
 
 			for (const auto& t : file.tokens)
 				utils::println(t);
