@@ -64,8 +64,6 @@ namespace ion::compiler
 
 	void Lexer::parse([[maybe_unused]] std::vector<Token>& tokens)
 	{
-		utils::println("Lexer: parsing", path);
-
 		std::ifstream file(path);
 		std::istreambuf_iterator<char> it(file);
 		std::istreambuf_iterator<char> end;

@@ -6,6 +6,6 @@ namespace ion::compiler
 
 	std::string Token::toString() const
 	{
-		return std::format("{: <{}}\t\t{: <{}}\t\t{: <{}}\t\t{: <{}}", line, 4, column, 4, Token::nameFromID(typeID), 34, text, 20);
+		return std::format("{: <{}}\t\t{: <{}}\t\t{: <{}}\t\t{: <{}}", line, 4, column, 4, type.typeName(), 34, text, 20);
 	}
 }

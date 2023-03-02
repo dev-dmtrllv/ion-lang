@@ -55,7 +55,6 @@ namespace ion::utils
 	void println(std::string_view arg);
 	void println(const std::string& arg);
 	void println(std::string&& arg);
-	void println(const Path& arg);
 	void println(bool arg);
 
 	template<concepts::ToStringable T>

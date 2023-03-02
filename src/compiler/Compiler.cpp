@@ -1,4 +1,5 @@
 #include "compiler/Compiler.hpp"
+#include "compiler/ast/FileAST.hpp"
 #include "compiler/Lexer.hpp"
 
 #include "print.hpp"
@@ -27,21 +28,30 @@ namespace ion::compiler
 
 	void Compiler::run()
 	{
+		using namespace ast;
+
 		if (!isConfigured_)
 			throw utils::Error("Compiler is not configured!");
 
-
 		for (auto& file : files_)
 		{
+			// utils::println("Lexer: parsing", file.path);
+
 			Lexer lexer(file.path);
 			lexer.parse(file.tokens);
 
-			utils::println(std::format("{: <{}}\t\t{: <{}}\t\t{: <{}}\t\t{: <{}}", "line:", 4, "column:", 4, "type:", 34, "text:", 20));
+			// utils::println(std::format("{: <{}}\t\t{: <{}}\t\t{: <{}}\t\t{: <{}}", "line:", 4, "column:", 4, "type:", 34, "text:", 20));
 
-			for (const auto& t : file.tokens)
-				utils::println(t);
+			// for (const auto& t : file.tokens)
+				// utils::println(t);
 
-			utils::println("");
+			TokenIterator iter(file.tokens);
+
+			auto& fileAST = projectAST.addChild<FileAST>();
+
+			AST::parse(iter, fileAST);
+			
+			utils::println(fileAST);
 		}
 
 		for (auto& file : files_)

@@ -194,7 +194,8 @@ namespace ion
 			value_ = nullptr;
 		}
 
-		bool unwrap(T& value) const
+		template<typename T2>
+		bool unwrap(T2& value) const
 		{
 			if(!hasValue())
 				return false;
@@ -202,17 +203,12 @@ namespace ion
 			return true;
 		}
 
-		// T unwrap(T&& value) const
-		// {
-		// 	if(!hasValue())
-		// 		return value;
-		// 	return *value_;
-		// }
-
-		// auto unwrap(auto callback) const
-		// {
-		// 	return callback(*this);
-		// }
+		T unwrap(T&& value) const
+		{
+			if(!hasValue())
+				return value;
+			return *value_;
+		}
 
 	private:
 		T* value_;

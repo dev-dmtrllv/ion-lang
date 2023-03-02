@@ -3,6 +3,7 @@
 #include "pch.hpp"
 #include "utils/ArgParser.hpp"
 #include "compiler/File.hpp"
+#include "compiler/ast/ProjectAST.hpp"
 
 namespace ion::compiler
 {
@@ -18,6 +19,8 @@ namespace ion::compiler
 		void configure(const utils::ArgParser& args);
 		void run();
 
+		ast::ProjectAST projectAST;
+		
 	private:
 		bool isConfigured_;
 		const Path projectPath_;
