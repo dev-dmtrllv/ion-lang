@@ -4,5 +4,5 @@
 
 namespace ion::compiler::ast
 {
-	void importParser(TokenIterator& iter, ast::AST& parent);
+	void structParser(TokenIterator& iter, ast::AST& parent);
 }

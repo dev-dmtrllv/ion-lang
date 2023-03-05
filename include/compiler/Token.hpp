@@ -5,6 +5,9 @@
 #include "compiler/ast/AST.hpp"
 #include "compiler/ast/parsers/Parser.hpp"
 #include "compiler/ast/parsers/ImportParser.hpp"
+#include "compiler/ast/parsers/ScopeParser.hpp"
+#include "compiler/ast/parsers/FunctionParser.hpp"
+#include "compiler/ast/parsers/StructParser.hpp"
 #include "compiler/TokenIterator.hpp"
 
 namespace ion::compiler
@@ -75,13 +78,13 @@ namespace ion::compiler
 
 
 		protected:
-			explicit Type(const std::size_t id, const Value& value, ast::Parser parser = ast::defaultParser):
+			explicit Type(const std::size_t id, const Value& value, ast::Parser parser = nullptr):
 				id(id),
 				value(value),
 				parser(parser)
 			{ }
 
-			explicit Type(const std::size_t id, Value&& value, ast::Parser parser = ast::defaultParser):
+			explicit Type(const std::size_t id, Value&& value, ast::Parser parser = nullptr):
 				id(id),
 				value(value),
 				parser(parser)
@@ -138,7 +141,7 @@ namespace ion::compiler
 			Type& operator=(const Type& other) = default;
 
 		protected:
-			explicit Type(const std::size_t id, const Value* value, ast::Parser parser = ast::defaultParser):
+			explicit Type(const std::size_t id, const Value* value, ast::Parser parser = nullptr):
 				id(id),
 				value(value),
 				parser(parser)
@@ -159,7 +162,8 @@ namespace ion::compiler
 	public:
 		struct Identifier: public Type<Identifier, std::pair<char, bool>>
 		{
-			explicit Identifier(const std::size_t id, char value, bool ignore = false, ast::Parser parser = ast::defaultParser): Type(id, { value, ignore }, parser) { }
+			explicit Identifier(const std::size_t id, char value, ast::Parser parser): Type(id, { value, false }, parser) { }
+			explicit Identifier(const std::size_t id, char value, bool ignore = false, ast::Parser parser = nullptr): Type(id, { value, ignore }, parser) { }
 
 			virtual bool match(const std::pair<char, bool>& c) const override { return value.first == c.first; }
 
@@ -260,8 +264,8 @@ namespace ion::compiler
 			const Keyword RETURN = Keyword::create("return");
 			const Keyword LET = Keyword::create("let");
 			const Keyword PUB = Keyword::create("pub");
-			const Keyword FN = Keyword::create("fn");
-			const Keyword STRUCT = Keyword::create("struct");
+			const Keyword FN = Keyword::create("fn", ast::functionParser);
+			const Keyword STRUCT = Keyword::create("struct", ast::structParser);
 			const Keyword TRAIT = Keyword::create("trait");
 			const Keyword TYPE = Keyword::create("type");
 			const Keyword USING = Keyword::create("using");
@@ -284,7 +288,7 @@ namespace ion::compiler
 			const Identifier SPACE = Identifier::create(' ', true);
 
 			const Identifier END_STMT = Identifier::create(';');
-			const Identifier SCOPE_START = Identifier::create('{');
+			const Identifier SCOPE_START = Identifier::create('{', ast::scopeParser);
 			const Identifier SCOPE_END = Identifier::create('}');
 			const Identifier BRACKET_START = Identifier::create('(');
 			const Identifier BRACKET_END = Identifier::create(')');
@@ -346,17 +350,32 @@ namespace ion::compiler
 				return Token::nameFromID(typeID);
 			}
 
-			template<typename T>
-			inline bool match(const T& value) const
+			inline bool match(const std::string& value) const
 			{
 				if (typeID == Identifier::ID)
-					return type<Identifier>().match(value);
+					return value.compare(std::string({ type<Identifier>().value.first })) == 0;
 				else if (typeID == Keyword::ID)
-					return type<Keyword>();
+					return type<Keyword>().match(value);
 				else if (typeID == Name::ID)
 					return type<Name>().match(value);
 				else if (typeID == Unknown::ID)
 					return type<Unknown>().match(value);
+
+				return false;
+			}
+
+			template<typename T>
+			inline bool match(const char value) const
+			{
+				std::string str({ value });
+				if (typeID == Identifier::ID)
+					return type<Identifier>().match(value);
+				else if (typeID == Keyword::ID)
+					return type<Keyword>().match(str);
+				else if (typeID == Name::ID)
+					return type<Name>().match(str);
+				else if (typeID == Unknown::ID)
+					return type<Unknown>().match(str);
 
 				return false;
 			}

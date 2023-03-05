@@ -7,7 +7,7 @@ namespace ion::compiler::ast
 	class FileAST: public ScopeAST
 	{
 	public:
-		FileAST(): ScopeAST() {}
+		FileAST(): ScopeAST({}) {}
 		virtual ~FileAST() {}
 
 		virtual std::string toString() const override

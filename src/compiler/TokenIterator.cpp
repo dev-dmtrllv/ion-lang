@@ -35,4 +35,11 @@ namespace ion::compiler
 			return false;
 		return cur == token;
 	}
+
+	void TokenIterator::skipIf(std::string_view value)
+	{
+		const auto c = current();
+		if (c.hasValue() && (c.value().text.compare(value) == 0))
+			current_++;
+	}
 }

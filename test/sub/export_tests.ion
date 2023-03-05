@@ -1,2 +1,7 @@
 export const fn test(): i32 { return 1337; }
 export const fn test2(a: i32, b: i32): i32 { return (a * b) + (b * b); }
+
+export struct ExportedStruct 
+{
+		
+}

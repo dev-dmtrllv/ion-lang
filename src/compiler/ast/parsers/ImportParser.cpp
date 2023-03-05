@@ -1,5 +1,3 @@
-#pragma once
-
 #include "compiler/ast/parsers/Parser.hpp"
 #include "compiler/ast/ImportAST.hpp"
 #include "compiler/Token.hpp"
@@ -10,9 +8,11 @@ namespace ion::compiler::ast
 {
 	Path getImportPath(TokenIterator& iter)
 	{
+		iter.skipIf("import");
+
 		Token token;
 
-		bool expectSeperator = false; // check if we expected a DOT (.)
+		bool expectSeperator = false;
 
 		Path importPath = "";
 
@@ -52,7 +52,7 @@ namespace ion::compiler::ast
 
 		std::vector<ImportAST::Import> imports;
 
-		bool expectSeperator = false; // check if we expected a DOT (.)
+		bool expectSeperator = false;
 
 		std::string name;
 		std::string alias;

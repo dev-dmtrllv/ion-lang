@@ -8,7 +8,8 @@ namespace ion::compiler::ast
 	class ScopeAST: public AST
 	{
 	public:
-		ScopeAST(): AST() { }
+		ScopeAST(Maybe<AST&> parent): AST(parent) { }
+
 		virtual ~ScopeAST() { }
 	};
 }

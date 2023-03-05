@@ -1,21 +1,18 @@
 #pragma once
 
 #include "pch.hpp"
+#include "compiler/Token.hpp"
 
 namespace ion::compiler
 {
-	class Token;
-
 	class SyntaxError : public std::runtime_error
 	{
 	public:
-		SyntaxError(const char* msg, Token& token): std::runtime_error(msg),
-			token_(token)
-		{}
+		SyntaxError(const char* msg, const Token& token);
 
-		const Token& token() const { return token_; }
+		const Token& token() const;
 
 	private:
-		Token& token_;
+		Token token_;
 	};
 }

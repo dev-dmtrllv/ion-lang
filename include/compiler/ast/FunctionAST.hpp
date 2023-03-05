@@ -7,7 +7,7 @@ namespace ion::compiler::ast
 	class FunctionAST: public ScopeAST
 	{
 	public:
-		FunctionAST(): ScopeAST() {}
+		FunctionAST(Maybe<AST&> parent): ScopeAST(parent) {}
 		virtual ~FunctionAST() {}
 	};
 }
